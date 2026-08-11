@@ -1311,9 +1311,11 @@ function createCustomerQR(customer){
 
   element.innerHTML="";
 
-  const data=
-    "AWDAH-CUSTOMER:" + customer.id +
-    "|PHONE:" + customer.phone;
+  const baseUrl =
+    window.location.origin + window.location.pathname;
+
+  const data =
+    baseUrl + "?customer=" + customer.id;
 
   new QRCode(element,{
     text:data,
@@ -1326,6 +1328,15 @@ function showCustomers(){
 
   let customers=
     getCustomers().map(normalizeCustomer);
+
+  const params = new URLSearchParams(window.location.search);
+  const customerId = params.get("customer");
+
+  if(customerId){
+    customers = customers.filter(
+      customer => String(customer.id) === String(customerId)
+    );
+  }
 
   const search=
     (document.getElementById("search")?.value||"")
