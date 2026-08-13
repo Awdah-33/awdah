@@ -255,14 +255,14 @@ const { navigate } = useApp();
               </div>
             </div>
 
-            {selectedCustomer && selectedCustomer.freeWashesAvailable > 0 && (
+            {(selectedCustomer?.freeWashesAvailable ?? 0) > 0 && (
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', fontSize: '0.9rem' }}>
                 <input
                   type="checkbox"
                   checked={useFreeWash}
                   onChange={(e) => setUseFreeWash(e.target.checked)}
                 />
-                استخدام غسلة مجانية ({selectedCustomer.freeWashesAvailable} متاحة)
+                استخدام غسلة مجانية ({(selectedCustomer?.freeWashesAvailable ?? 0)} متاحة)
               </label>
             )}
           </section>
@@ -318,7 +318,7 @@ const { navigate } = useApp();
               <button
   type="button"
   className="btn btn-primary"
-  onClick={() => { sessionStorage.setItem('latestInvoice', JSON.stringify(success)); navigate('invoice-details'); }}
+  onClick={() => navigate('invoices')}
 >
                 عرض الفاتورة
               </button>
