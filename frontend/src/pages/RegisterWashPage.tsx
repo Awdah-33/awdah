@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
   mockCustomers,
@@ -11,6 +12,7 @@ import type { Customer, PaymentMethod, Service, WashSuccess } from '../types';
 import { calculateWashPreview, formatCurrency } from '../utils/loyalty';
 
 export function RegisterWashPage() {
+const { navigate } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
@@ -253,7 +255,7 @@ export function RegisterWashPage() {
               </div>
             </div>
 
-            {selectedCustomer.freeWashesAvailable > 0 && (
+            {selectedCustomer && selectedCustomer.freeWashesAvailable > 0 && (
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', fontSize: '0.9rem' }}>
                 <input
                   type="checkbox"
@@ -313,7 +315,11 @@ export function RegisterWashPage() {
               <strong>الغسلات المؤهلة:</strong> {success.eligibleWashesCount}
             </p>
             <div className="success-actions">
-              <button type="button" className="btn btn-primary">
+              <button
+  type="button"
+  className="btn btn-primary"
+  onClick={() => { sessionStorage.setItem('latestInvoice', JSON.stringify(success)); navigate('invoice-details'); }}
+>
                 عرض الفاتورة
               </button>
               <button type="button" className="btn btn-secondary">

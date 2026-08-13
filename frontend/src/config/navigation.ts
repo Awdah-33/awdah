@@ -18,6 +18,7 @@ export const navItems: NavItem[] = [
 ];
 
 export const pageTitles: Record<AppPage, { title: string; subtitle: string }> = {
+  'invoice-details': { title: 'تفاصيل الفاتورة', subtitle: 'عرض تفاصيل عملية الغسيل' },
   dashboard: {
     title: 'لوحة التحكم',
     subtitle: 'نظرة سريعة على أداء المغسلة اليوم',

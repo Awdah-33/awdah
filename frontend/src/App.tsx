@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterWashPage } from './pages/RegisterWashPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { InvoicesPage } from './pages/InvoicesPage';
+import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { LoyaltyPage } from './pages/LoyaltyPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -21,6 +22,8 @@ function AppPages() {
       return <CustomersPage />;
     case 'invoices':
       return <InvoicesPage />;
+    case 'invoice-details':
+      return <InvoiceDetailsPage />;
     case 'loyalty':
       return <LoyaltyPage />;
     case 'reports':
