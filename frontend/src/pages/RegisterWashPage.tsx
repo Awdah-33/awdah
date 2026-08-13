@@ -12,6 +12,10 @@ import type { Customer, PaymentMethod, Service, WashSuccess } from '../types';
 import { calculateWashPreview, formatCurrency } from '../utils/loyalty';
 
 export function RegisterWashPage() {
+  const savedCustomers = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
+  const savedVehicles = JSON.parse(localStorage.getItem('rajaa_vehicles') || '[]');
+  const allCustomers: any[] = [...savedCustomers, ...mockCustomers];
+  const allVehicles: any[] = [...savedVehicles, ...mockVehicles];
 const { navigate } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -25,11 +29,11 @@ const { navigate } = useApp();
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query || query.length < 2) return [];
-    return mockCustomers.filter(
+    return allCustomers.filter(
       (customer) =>
         customer.fullName.includes(query) ||
         customer.phone.includes(query) ||
-        mockVehicles.some(
+        allVehicles.some(
           (v) =>
             v.customerId === customer.id &&
             (`${v.plateNumber} ${v.plateLetters}`.includes(query) ||
@@ -40,7 +44,7 @@ const { navigate } = useApp();
 
   const customerVehicles = useMemo(() => {
     if (!selectedCustomer) return [];
-    return mockVehicles.filter((v) => v.customerId === selectedCustomer.id);
+    return allVehicles.filter((v) => v.customerId === selectedCustomer.id);
   }, [selectedCustomer]);
 
   const selectedServices = useMemo(

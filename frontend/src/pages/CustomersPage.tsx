@@ -14,15 +14,19 @@ type LocalCustomer = {
 };
 
 export function CustomersPage() {
-  const [customers, setCustomers] = useState<LocalCustomer[]>(
-    mockCustomers.map((c: any) => ({
-      id: c.id,
-      fullName: c.fullName,
-      phone: c.phone,
-      membershipTier: c.membershipTier,
-      vehiclesCount: c.vehiclesCount ?? 0,
-    }))
-  );
+  const [customers, setCustomers] = useState<LocalCustomer[]>(() => {
+    const saved = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
+    return [
+      ...saved,
+      ...mockCustomers.map((c: any) => ({
+        id: c.id,
+        fullName: c.fullName,
+        phone: c.phone,
+        membershipTier: c.membershipTier,
+        vehiclesCount: c.vehiclesCount ?? 0,
+      })),
+    ];
+  });
 
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
@@ -53,19 +57,48 @@ export function CustomersPage() {
       return;
     }
 
-    setCustomers((current) => [
-      {
-        id: Date.now(),
-        fullName: form.fullName.trim(),
-        phone: form.phone.trim(),
-        membershipTier: 'none',
-        vehiclesCount: form.plateNumber.trim() ? 1 : 0,
-        vehicleBrand: form.vehicleBrand.trim(),
+    const newId = Date.now();
+
+    const newCustomer = {
+      id: newId,
+      fullName: form.fullName.trim(),
+      phone: form.phone.trim(),
+      membershipTier: 'none',
+      eligibleWashesCount: 0,
+      freeWashesAvailable: 0,
+      vehiclesCount: form.plateNumber.trim() ? 1 : 0,
+      vehicleBrand: form.vehicleBrand.trim(),
+      plateNumber: form.plateNumber.trim(),
+      vehicleSize: form.vehicleSize,
+    };
+
+    setCustomers((current) => [newCustomer, ...current]);
+
+    const savedCustomers = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
+    localStorage.setItem(
+      'rajaa_customers',
+      JSON.stringify([newCustomer, ...savedCustomers])
+    );
+
+    if (form.plateNumber.trim()) {
+      const savedVehicles = JSON.parse(localStorage.getItem('rajaa_vehicles') || '[]');
+
+      const newVehicle = {
+        id: Date.now() + 1,
+        customerId: newId,
         plateNumber: form.plateNumber.trim(),
+        plateLetters: '',
         vehicleSize: form.vehicleSize,
-      },
-      ...current,
-    ]);
+        brand: form.vehicleBrand.trim() || 'غير محدد',
+        model: '',
+        color: '',
+      };
+
+      localStorage.setItem(
+        'rajaa_vehicles',
+        JSON.stringify([newVehicle, ...savedVehicles])
+      );
+    }
 
     setForm({
       fullName: '',
