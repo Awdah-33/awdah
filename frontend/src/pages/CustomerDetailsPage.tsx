@@ -44,7 +44,8 @@ export function CustomerDetailsPage() {
   });
 
   if (!customer) {
-    return (
+
+  return (
       <>
         <PageHeader title="تفاصيل العميل" subtitle="بيانات العميل" />
         <div className="card" style={{ padding: 20 }}>
@@ -55,6 +56,15 @@ export function CustomerDetailsPage() {
         </div>
       </>
     );
+  }
+
+  function deleteVehicle(vehicleId: any) {
+    const ok = window.confirm('هل تريد حذف هذه السيارة؟');
+    if (!ok) return;
+
+    const updated = savedVehicles.filter((vehicle: any) => vehicle.id !== vehicleId);
+    localStorage.setItem('rajaa_vehicles', JSON.stringify(updated));
+    setSavedVehicles(updated);
   }
 
   const vehiclesMap = new Map<any, any>();
@@ -219,6 +229,17 @@ export function CustomerDetailsPage() {
                   vehicle.vehicleSize ||
                   '-'}
               </div>
+
+              {vehicle.id !== 'customer-main-vehicle' && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ marginTop: 10 }}
+                  onClick={() => deleteVehicle(vehicle.id)}
+                >
+                  حذف السيارة
+                </button>
+              )}
             </div>
           ))}
         </div>
