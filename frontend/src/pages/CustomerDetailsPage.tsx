@@ -221,7 +221,19 @@ export function CustomerDetailsPage() {
 
               window.open(
                 `https://wa.me/${phone}?text=${encodeURIComponent(
-                  `مرحباً ${customer.fullName}`
+                  (() => {
+                  const lastInvoice = customerInvoices[0];
+                  if (!lastInvoice) {
+                    return `مرحباً ${customer.fullName}`;
+                  }
+
+                  return `مرحباً ${customer.fullName}
+شكراً لاختيارك لنا 🌟
+رقم الفاتورة: ${lastInvoice.invoiceNumber}
+اللوحة: ${lastInvoice.vehiclePlate || '-'}
+الإجمالي: ${lastInvoice.totalAmount ?? 0} ر.س
+نسعد بخدمتك دائماً`;
+                })()
                 )}`,
                 '_blank'
               );
