@@ -56,23 +56,13 @@ export function InvoiceDetailsPage() {
             {formatCurrency(invoice.totalAmount ?? invoice.amount ?? 0)}
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => window.print()}
-            >
-              طباعة الفاتورة
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('invoices')}
-            >
-              العودة إلى الفواتير
-            </button>
-          </div>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => navigate('invoices')}
+          >
+            العودة إلى الفواتير
+          </button>
         </div>
       </div>
     </>

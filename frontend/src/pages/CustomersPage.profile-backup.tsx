@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
-import { useApp } from '../context/AppContext';
 import { mockCustomers } from '../data/mockData';
 
 type LocalCustomer = {
@@ -15,14 +14,11 @@ type LocalCustomer = {
 };
 
 export function CustomersPage() {
-  const { navigate } = useApp();
   const [customers, setCustomers] = useState<LocalCustomer[]>(() => {
     const saved = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
     return [
       ...saved,
-      ...mockCustomers
-        .filter((c: any) => !saved.some((x: any) => x.id === c.id))
-        .map((c: any) => ({
+      ...mockCustomers.map((c: any) => ({
         id: c.id,
         fullName: c.fullName,
         phone: c.phone,
@@ -31,11 +27,6 @@ export function CustomersPage() {
       })),
     ];
   });
-
-  function openCustomer(customer: any) {
-    sessionStorage.setItem('selectedCustomer', JSON.stringify(customer));
-    navigate('customer-details');
-  }
 
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
@@ -229,8 +220,6 @@ export function CustomersPage() {
                 <th>الاسم</th>
                 <th>الجوال</th>
                 <th>العضوية</th>
-                <th>الغسلات المؤهلة</th>
-                <th>المجانية</th>
                 <th>السيارات</th>
                 <th>اللوحة</th>
               </tr>
@@ -238,16 +227,10 @@ export function CustomersPage() {
 
             <tbody>
               {filteredCustomers.map((customer) => (
-                <tr
-              key={customer.id}
-              onClick={() => openCustomer(customer)}
-              style={{ cursor: 'pointer' }}
-            >
+                <tr key={customer.id}>
                   <td>{customer.fullName}</td>
                   <td>{customer.phone}</td>
                   <td>{customer.membershipTier || 'بدون عضوية'}</td>
-                  <td>{(customer as any).eligibleWashesCount ?? 0}</td>
-                  <td>{(customer as any).freeWashesAvailable ?? 0}</td>
                   <td>{customer.vehiclesCount ?? 0}</td>
                   <td>{customer.plateNumber || '-'}</td>
                 </tr>

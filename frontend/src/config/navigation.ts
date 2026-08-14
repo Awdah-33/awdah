@@ -27,6 +27,7 @@ export const pageTitles: Record<AppPage, { title: string; subtitle: string }> = 
     title: 'تسجيل غسلة',
     subtitle: 'سجّل عملية الغسيل بسرعة — الهدف 20–30 ثانية',
   },
+  'customer-details': { title: 'تفاصيل العميل', subtitle: 'بيانات العميل وعضويته وسياراته' },
   customers: {
     title: 'العملاء',
     subtitle: 'إدارة وبحث العملاء',

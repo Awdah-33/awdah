@@ -87,6 +87,7 @@ export type AppPage =
   | 'dashboard'
   | 'register-wash'
   | 'customers'
+  | 'customer-details'
   | 'invoices'
   | 'loyalty'
   | 'reports'

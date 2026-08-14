@@ -3,6 +3,7 @@ import { useApp } from './context/AppContext';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterWashPage } from './pages/RegisterWashPage';
+import { CustomerDetailsPage } from './pages/CustomerDetailsPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { InvoicesPage } from './pages/InvoicesPage';
 import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
@@ -18,6 +19,8 @@ function AppPages() {
       return <DashboardPage />;
     case 'register-wash':
       return <RegisterWashPage />;
+    case 'customer-details':
+      return <CustomerDetailsPage />;
     case 'customers':
       return <CustomersPage />;
     case 'invoices':
