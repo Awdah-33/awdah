@@ -37,6 +37,12 @@ export function CustomerDetailsPage() {
   });
 
   const [showAddVehicle, setShowAddVehicle] = useState(false);
+  const [editingVehicleId, setEditingVehicleId] = useState<any>(null);
+  const [editVehicleForm, setEditVehicleForm] = useState({
+    brand: '',
+    plateNumber: '',
+    vehicleSize: 'medium',
+  });
   const [vehicleForm, setVehicleForm] = useState({
     brand: '',
     plateNumber: '',
@@ -56,6 +62,32 @@ export function CustomerDetailsPage() {
         </div>
       </>
     );
+  }
+
+  function startEditVehicle(vehicle: any) {
+    setEditingVehicleId(vehicle.id);
+    setEditVehicleForm({
+      brand: vehicle.brand || vehicle.vehicleBrand || '',
+      plateNumber: vehicle.plateNumber || '',
+      vehicleSize: vehicle.vehicleSize || vehicle.size || 'medium',
+    });
+  }
+
+  function saveVehicleEdit(vehicleId: any) {
+    const updated = savedVehicles.map((vehicle: any) =>
+      vehicle.id === vehicleId
+        ? {
+            ...vehicle,
+            brand: editVehicleForm.brand.trim(),
+            plateNumber: editVehicleForm.plateNumber.trim(),
+            vehicleSize: editVehicleForm.vehicleSize,
+          }
+        : vehicle
+    );
+
+    localStorage.setItem('rajaa_vehicles', JSON.stringify(updated));
+    setSavedVehicles(updated);
+    setEditingVehicleId(null);
   }
 
   function deleteVehicle(vehicleId: any) {
@@ -213,25 +245,96 @@ export function CustomerDetailsPage() {
                 padding: 14,
               }}
             >
-              <div>
-                <strong>السيارة:</strong>{' '}
-                {vehicle.brand || vehicle.vehicleBrand || '-'}
-              </div>
+              {editingVehicleId === vehicle.id ? (
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <input
+                    className="form-input"
+                    value={editVehicleForm.brand}
+                    onChange={(e) =>
+                      setEditVehicleForm({
+                        ...editVehicleForm,
+                        brand: e.target.value,
+                      })
+                    }
+                    placeholder="ماركة السيارة"
+                  />
 
-              <div>
-                <strong>رقم اللوحة:</strong>{' '}
-                {vehicle.plateNumber || '-'}
-              </div>
+                  <input
+                    className="form-input"
+                    value={editVehicleForm.plateNumber}
+                    onChange={(e) =>
+                      setEditVehicleForm({
+                        ...editVehicleForm,
+                        plateNumber: e.target.value,
+                      })
+                    }
+                    placeholder="رقم اللوحة"
+                  />
 
-              <div>
-                <strong>الحجم:</strong>{' '}
-                {vehicleSizeLabels[vehicle.vehicleSize] ||
-                  vehicle.vehicleSize ||
-                  '-'}
-              </div>
+                  <select
+                    className="form-input"
+                    value={editVehicleForm.vehicleSize}
+                    onChange={(e) =>
+                      setEditVehicleForm({
+                        ...editVehicleForm,
+                        vehicleSize: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="small">صغيرة</option>
+                    <option value="medium">متوسطة</option>
+                    <option value="large">كبيرة</option>
+                  </select>
 
-              {vehicle.id !== 'customer-main-vehicle' && (
-                <button
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => saveVehicleEdit(vehicle.id)}
+                    >
+                      حفظ
+                    </button>
+
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setEditingVehicleId(null)}
+                    >
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <strong>السيارة:</strong>{' '}
+                    {vehicle.brand || vehicle.vehicleBrand || '-'}
+                  </div>
+
+                  <div>
+                    <strong>رقم اللوحة:</strong>{' '}
+                    {vehicle.plateNumber || '-'}
+                  </div>
+
+                  <div>
+                    <strong>الحجم:</strong>{' '}
+                    {vehicleSizeLabels[vehicle.vehicleSize] ||
+                      vehicle.vehicleSize ||
+                      '-'}
+                  </div>
+                </>
+              )}
+
+              {vehicle.id !== 'customer-main-vehicle' && editingVehicleId !== vehicle.id && (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    style={{ marginTop: 10, marginLeft: 8 }}
+                    onClick={() => startEditVehicle(vehicle)}
+                  >
+                    تعديل السيارة
+                  </button>
+
+                  <button
                   type="button"
                   className="btn btn-secondary"
                   style={{ marginTop: 10 }}
@@ -239,6 +342,7 @@ export function CustomerDetailsPage() {
                 >
                   حذف السيارة
                 </button>
+                </>
               )}
             </div>
           ))}
