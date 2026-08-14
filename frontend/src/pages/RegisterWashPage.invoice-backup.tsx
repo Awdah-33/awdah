@@ -209,85 +209,8 @@ const { navigate } = useApp();
       setSelectedCustomer(updatedCustomer);
     }
 
-
-    const savedInvoiceNumber = `INV-2026-${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`;
-
-
-
-    if (selectedCustomer) {
-
-
-      const vehicle = allVehicles.find(
-
-
-        (v: any) => v.id === selectedVehicleId
-
-
-      );
-
-
-
-      const invoices = JSON.parse(
-
-
-        localStorage.getItem('rajaa_invoices') || '[]'
-
-
-      );
-
-
-
-      invoices.unshift({
-
-
-        id: Date.now(),
-
-
-        invoiceNumber: savedInvoiceNumber,
-
-
-        customerName: selectedCustomer.fullName,
-
-
-        vehiclePlate: vehicle?.plateNumber || '-',
-
-
-        branchName: 'فرع الرياض',
-
-
-        employeeName: 'محمد العتيبي',
-
-
-        totalAmount: preview.totalAmount,
-
-
-        paymentMethod,
-
-
-        status: 'completed',
-
-
-        createdAt: new Date().toISOString(),
-
-
-        membershipTier: updatedMembershipTier
-
-
-      });
-
-
-
-      localStorage.setItem('rajaa_invoices', JSON.stringify(invoices));
-
-
-    }
-
-
-
     setSuccess({
-
-
-      invoiceNumber: savedInvoiceNumber,
+        invoiceNumber: `INV-2026-${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`,
         totalAmount: preview.totalAmount,
         membershipTier: updatedMembershipTier as any,
         eligibleWashesCount: updatedEligibleWashesCount,

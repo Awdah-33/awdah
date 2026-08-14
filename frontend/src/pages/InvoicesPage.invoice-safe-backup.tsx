@@ -3,10 +3,6 @@ import { mockInvoices, membershipTierLabels, paymentMethodLabels } from '../data
 import { formatCurrency, formatDate } from '../utils/loyalty';
 
 export function InvoicesPage() {
-  const savedInvoices = JSON.parse(
-    localStorage.getItem('rajaa_invoices') || '[]'
-  );
-  const allInvoices = [...savedInvoices, ...mockInvoices];
   return (
     <>
       <PageHeader title="الفواتير" subtitle="عرض وإدارة الفواتير" />
@@ -26,7 +22,7 @@ export function InvoicesPage() {
               </tr>
             </thead>
             <tbody>
-              {allInvoices.map((invoice) => (
+              {mockInvoices.map((invoice) => (
                 <tr key={invoice.id}>
                   <td>{invoice.invoiceNumber}</td>
                   <td>{formatDate(invoice.createdAt)}</td>
@@ -47,7 +43,7 @@ export function InvoicesPage() {
       </div>
 
       <div className="mobile-card-list">
-        {allInvoices.map((invoice) => (
+        {mockInvoices.map((invoice) => (
           <div key={invoice.id} className="mobile-list-card">
             <div className="mobile-list-card-row">
               <span className="mobile-list-card-title">{invoice.invoiceNumber}</span>
