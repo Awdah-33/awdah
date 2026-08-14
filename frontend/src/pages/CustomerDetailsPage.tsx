@@ -19,6 +19,7 @@ const vehicleSizeLabels: Record<string, string> = {
 
 export function CustomerDetailsPage() {
   const [historySearch, setHistorySearch] = useState('');
+  const [historyFilter, setHistoryFilter] = useState<'all' | 'washes' | 'invoices'>('all');
 
   const { navigate } = useApp();
 
@@ -423,6 +424,12 @@ export function CustomerDetailsPage() {
 
       <div style={{ height: 16 }} />
 
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <button className="btn btn-secondary" onClick={() => setHistoryFilter('all')}>الكل</button>
+        <button className="btn btn-secondary" onClick={() => setHistoryFilter('washes')}>الغسلات</button>
+        <button className="btn btn-secondary" onClick={() => setHistoryFilter('invoices')}>الفواتير</button>
+      </div>
+
       <div className="card" style={{ padding: 16, marginBottom: 16 }}>
         <input
           className="form-input"
@@ -432,7 +439,11 @@ export function CustomerDetailsPage() {
         />
       </div>
 
-      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+      <div className="card" style={{
+        padding: 20,
+        marginBottom: 16,
+        display: historyFilter === 'invoices' ? 'none' : 'block'
+      }}>
         <h3 style={{ marginTop: 0 }}>
           سجل الغسلات ({customerWashes.length})
         </h3>
@@ -490,7 +501,11 @@ export function CustomerDetailsPage() {
         )}
       </div>
 
-      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+      <div className="card" style={{
+        padding: 20,
+        marginBottom: 16,
+        display: historyFilter === 'washes' ? 'none' : 'block'
+      }}>
         <h3 style={{ marginTop: 0 }}>
           فواتير العميل ({customerInvoices.length})
         </h3>
