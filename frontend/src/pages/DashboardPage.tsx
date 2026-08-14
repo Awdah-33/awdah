@@ -75,8 +75,8 @@ export function DashboardPage() {
           <div className="stat-value">{stats.totalCustomers.toLocaleString('ar-SA')}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">أعضاء نشطون</div>
-          <div className="stat-value">{stats.activeMembers}</div>
+          <div className="stat-label">أعضاء جدد اليوم</div>
+          <div className="stat-value">{stats.newCustomers}</div>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export function DashboardPage() {
         <div className="card">
           <h3 className="card-title">مؤشر الولاء</h3>
           <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-            {stats.newCustomers} عملاء جدد اليوم — {stats.activeMembers} عضو نشط في برنامج الولاء
+            {stats.newCustomers} عملاء جدد اليوم — {stats.newCustomers} عضو نشط في برنامج الولاء
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {(['bronze', 'silver', 'gold', 'diamond'] as const).map((tier) => (
