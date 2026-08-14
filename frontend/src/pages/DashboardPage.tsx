@@ -1,3 +1,4 @@
+import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
   mockServices,
@@ -6,6 +7,7 @@ import {
 import { formatCurrency, formatDate } from '../utils/loyalty';
 
 export function DashboardPage() {
+  const { navigate } = useApp();
   const savedInvoices: any[] = JSON.parse(
     localStorage.getItem('rajaa_invoices') || '[]'
   );
@@ -48,6 +50,16 @@ export function DashboardPage() {
         title="لوحة التحكم"
         subtitle="نظرة سريعة على أداء المغسلة اليوم"
       />
+
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={() => navigate('register-wash')}
+        style={{ marginBottom: 16 }}
+      >
+        + غسلة جديدة
+      </button>
+
 
       <div className="stats-grid">
         <div className="stat-card highlight">
