@@ -210,6 +210,25 @@ export function CustomerDetailsPage() {
         <div style={{ display: 'grid', gap: 14 }}>
           <div><strong>الاسم:</strong> {customer.fullName}</div>
           <div><strong>الجوال:</strong> {customer.phone}</div>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              const phone = String(customer.phone || '')
+                .replace(/\D/g, '')
+                .replace(/^0/, '966');
+
+              window.open(
+                `https://wa.me/${phone}?text=${encodeURIComponent(
+                  `مرحباً ${customer.fullName}`
+                )}`,
+                '_blank'
+              );
+            }}
+          >
+            فتح واتساب
+          </button>
           <div>
             <strong>العضوية:</strong>{' '}
             {membershipLabels[customer.membershipTier] || 'بدون عضوية'}
