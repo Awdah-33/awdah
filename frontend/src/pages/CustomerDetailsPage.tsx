@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { useApp } from '../context/AppContext';
 import { mockVehicles } from '../data/mockData';
@@ -27,26 +28,34 @@ export function CustomerDetailsPage() {
     customer = null;
   }
 
+  const [savedVehicles, setSavedVehicles] = useState<any[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('rajaa_vehicles') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const [showAddVehicle, setShowAddVehicle] = useState(false);
+  const [vehicleForm, setVehicleForm] = useState({
+    brand: '',
+    plateNumber: '',
+    vehicleSize: 'medium',
+  });
+
   if (!customer) {
     return (
       <>
         <PageHeader title="تفاصيل العميل" subtitle="بيانات العميل" />
         <div className="card" style={{ padding: 20 }}>
           <p>لا يوجد عميل محدد.</p>
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate('customers')}
-          >
+          <button className="btn btn-secondary" onClick={() => navigate('customers')}>
             العودة للعملاء
           </button>
         </div>
       </>
     );
   }
-
-  const savedVehicles = JSON.parse(
-    localStorage.getItem('rajaa_vehicles') || '[]'
-  );
 
   const vehiclesMap = new Map<any, any>();
 
@@ -67,6 +76,37 @@ export function CustomerDetailsPage() {
     }];
   }
 
+  function addVehicle() {
+    if (!vehicleForm.brand.trim() || !vehicleForm.plateNumber.trim()) {
+      alert('أدخل نوع السيارة ورقم اللوحة');
+      return;
+    }
+
+    const newVehicle = {
+      id: Date.now(),
+      customerId: customer.id,
+      brand: vehicleForm.brand.trim(),
+      model: '',
+      plateNumber: vehicleForm.plateNumber.trim(),
+      plateLetters: '',
+      vehicleSize: vehicleForm.vehicleSize,
+      color: '',
+    };
+
+    const updated = [newVehicle, ...savedVehicles];
+
+    localStorage.setItem('rajaa_vehicles', JSON.stringify(updated));
+    setSavedVehicles(updated);
+
+    setVehicleForm({
+      brand: '',
+      plateNumber: '',
+      vehicleSize: 'medium',
+    });
+
+    setShowAddVehicle(false);
+  }
+
   return (
     <>
       <PageHeader title="تفاصيل العميل" subtitle={customer.fullName} />
@@ -79,58 +119,109 @@ export function CustomerDetailsPage() {
             <strong>العضوية:</strong>{' '}
             {membershipLabels[customer.membershipTier] || 'بدون عضوية'}
           </div>
-          <div>
-            <strong>الغسلات المؤهلة:</strong>{' '}
-            {customer.eligibleWashesCount ?? 0}
-          </div>
-          <div>
-            <strong>الغسلات المجانية:</strong>{' '}
-            {customer.freeWashesAvailable ?? 0}
-          </div>
+          <div><strong>الغسلات المؤهلة:</strong> {customer.eligibleWashesCount ?? 0}</div>
+          <div><strong>الغسلات المجانية:</strong> {customer.freeWashesAvailable ?? 0}</div>
         </div>
       </div>
 
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
-        <h3 style={{ marginTop: 0 }}>
-          سيارات العميل ({customerVehicles.length})
-        </h3>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 10,
+            marginBottom: 16,
+          }}
+        >
+          <h3 style={{ margin: 0 }}>
+            سيارات العميل ({customerVehicles.length})
+          </h3>
 
-        {customerVehicles.length === 0 ? (
-          <p>لا توجد سيارات مسجلة لهذا العميل.</p>
-        ) : (
-          <div style={{ display: 'grid', gap: 12 }}>
-            {customerVehicles.map((vehicle: any, index: number) => (
-              <div
-                key={vehicle.id ?? index}
-                style={{
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 10,
-                  padding: 14,
-                }}
-              >
-                <div>
-                  <strong>السيارة:</strong>{' '}
-                  {vehicle.brand || vehicle.vehicleBrand || '-'}
-                  {vehicle.model ? ` ${vehicle.model}` : ''}
-                </div>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowAddVehicle(!showAddVehicle)}
+          >
+            + إضافة سيارة
+          </button>
+        </div>
 
-                <div>
-                  <strong>رقم اللوحة:</strong>{' '}
-                  {vehicle.plateNumber || '-'}
-                </div>
+        {showAddVehicle && (
+          <div
+            style={{
+              display: 'grid',
+              gap: 10,
+              padding: 14,
+              marginBottom: 16,
+              border: '1px solid #e5e7eb',
+              borderRadius: 10,
+            }}
+          >
+            <input
+              className="form-input"
+              placeholder="نوع / ماركة السيارة"
+              value={vehicleForm.brand}
+              onChange={(e) =>
+                setVehicleForm({ ...vehicleForm, brand: e.target.value })
+              }
+            />
 
-                <div>
-                  <strong>الحجم:</strong>{' '}
-                  {vehicleSizeLabels[vehicle.vehicleSize] ||
-                    vehicleSizeLabels[vehicle.size] ||
-                    vehicle.vehicleSize ||
-                    vehicle.size ||
-                    '-'}
-                </div>
-              </div>
-            ))}
+            <input
+              className="form-input"
+              placeholder="رقم اللوحة"
+              value={vehicleForm.plateNumber}
+              onChange={(e) =>
+                setVehicleForm({ ...vehicleForm, plateNumber: e.target.value })
+              }
+            />
+
+            <select
+              className="form-input"
+              value={vehicleForm.vehicleSize}
+              onChange={(e) =>
+                setVehicleForm({ ...vehicleForm, vehicleSize: e.target.value })
+              }
+            >
+              <option value="small">صغيرة</option>
+              <option value="medium">متوسطة</option>
+              <option value="large">كبيرة</option>
+            </select>
+
+            <button className="btn btn-primary" onClick={addVehicle}>
+              حفظ السيارة
+            </button>
           </div>
         )}
+
+        <div style={{ display: 'grid', gap: 12 }}>
+          {customerVehicles.map((vehicle: any, index: number) => (
+            <div
+              key={vehicle.id ?? index}
+              style={{
+                border: '1px solid #e5e7eb',
+                borderRadius: 10,
+                padding: 14,
+              }}
+            >
+              <div>
+                <strong>السيارة:</strong>{' '}
+                {vehicle.brand || vehicle.vehicleBrand || '-'}
+              </div>
+
+              <div>
+                <strong>رقم اللوحة:</strong>{' '}
+                {vehicle.plateNumber || '-'}
+              </div>
+
+              <div>
+                <strong>الحجم:</strong>{' '}
+                {vehicleSizeLabels[vehicle.vehicleSize] ||
+                  vehicle.vehicleSize ||
+                  '-'}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
