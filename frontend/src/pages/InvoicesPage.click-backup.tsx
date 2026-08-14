@@ -1,16 +1,8 @@
 import { PageHeader } from '../components/PageHeader';
-import { useApp } from '../context/AppContext';
 import { mockInvoices, membershipTierLabels, paymentMethodLabels } from '../data/mockData';
 import { formatCurrency, formatDate } from '../utils/loyalty';
 
 export function InvoicesPage() {
-  const { navigate } = useApp();
-
-  function openInvoice(invoice: any) {
-    sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
-    navigate('invoice-details');
-  }
-
   const savedInvoices = JSON.parse(
     localStorage.getItem('rajaa_invoices') || '[]'
   );
@@ -35,11 +27,7 @@ export function InvoicesPage() {
             </thead>
             <tbody>
               {allInvoices.map((invoice) => (
-                <tr
-              key={invoice.id}
-              onClick={() => openInvoice(invoice)}
-              style={{ cursor: 'pointer' }}
-            >
+                <tr key={invoice.id}>
                   <td>{invoice.invoiceNumber}</td>
                   <td>{formatDate(invoice.createdAt)}</td>
                   <td>{invoice.customerName}</td>
@@ -60,12 +48,7 @@ export function InvoicesPage() {
 
       <div className="mobile-card-list">
         {allInvoices.map((invoice) => (
-          <div
-              key={invoice.id}
-              className="mobile-list-card"
-              onClick={() => openInvoice(invoice)}
-              style={{ cursor: 'pointer' }}
-            >
+          <div key={invoice.id} className="mobile-list-card">
             <div className="mobile-list-card-row">
               <span className="mobile-list-card-title">{invoice.invoiceNumber}</span>
               <span className={`badge ${invoice.status === 'completed' ? 'badge-success' : 'badge-danger'}`}>
