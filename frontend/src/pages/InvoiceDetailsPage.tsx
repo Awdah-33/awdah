@@ -51,10 +51,15 @@ export function InvoiceDetailsPage() {
 الإجمالي: ${invoice.totalAmount ?? 0} ر.س
 شكراً لاختيارك لنا 🌟`;
 
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(message)}`,
-      '_blank'
-    );
+    const phone = String(invoice.customerPhone || '')
+      .replace(/\D/g, '')
+      .replace(/^0/, '966');
+
+    const url = phone
+      ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    window.open(url, '_blank');
   }
 
   return (

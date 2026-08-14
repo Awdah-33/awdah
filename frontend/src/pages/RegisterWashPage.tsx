@@ -332,6 +332,7 @@ const { navigate } = useApp();
     sessionStorage.setItem('latestInvoice', JSON.stringify({
       invoiceNumber: savedInvoiceNumber,
       customerName: selectedCustomer?.fullName || '-',
+      customerPhone: selectedCustomer?.phone || '',
       vehiclePlate: washVehicle?.plateNumber || '-',
       branchName: 'فرع الرياض',
       employeeName: 'محمد العتيبي',
