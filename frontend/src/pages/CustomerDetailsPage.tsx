@@ -427,7 +427,15 @@ export function CustomerDetailsPage() {
                 <div><strong>اللوحة:</strong> {wash.vehiclePlate || '-'}</div>
                 <div>
                   <strong>الخدمة:</strong>{' '}
-                  {Array.isArray(wash.services) ? wash.services.join(' + ') : '-'}
+                  {Array.isArray(wash.services)
+                    ? wash.services
+                        .map((service: any) =>
+                          typeof service === 'string' && !service.includes('[object Object]')
+                            ? service
+                            : 'خدمة قديمة'
+                        )
+                        .join(' + ')
+                    : '-'}
                 </div>
                 <div>
                   <strong>الإجمالي:</strong>{' '}
