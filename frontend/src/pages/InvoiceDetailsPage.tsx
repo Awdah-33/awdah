@@ -45,21 +45,48 @@ export function InvoiceDetailsPage() {
   }
 
   function sendWhatsApp() {
-    const message = `فاتورتك رقم: ${invoice.invoiceNumber}
-العميل: ${invoice.customerName || '-'}
+    const businessName =
+      localStorage.getItem('rajaa_business_name') || 'المغسلة';
+
+    const message = `مرحباً ${invoice.customerName || 'عميلنا'}
+
+رقم الفاتورة: ${invoice.invoiceNumber}
 السيارة / اللوحة: ${invoice.vehiclePlate || '-'}
 الإجمالي: ${invoice.totalAmount ?? 0} ر.س
-شكراً لاختيارك لنا 🌟`;
 
-    const phone = String(invoice.customerPhone || '')
+شكراً لاختيارك ${businessName}`;
+
+    let customerPhone = invoice.customerPhone || '';
+
+    if (!customerPhone) {
+      try {
+        const customers = JSON.parse(
+          localStorage.getItem('rajaa_customers') || '[]'
+        );
+
+        const customer = customers.find(
+          (c: any) => c.fullName === invoice.customerName
+        );
+
+        customerPhone = customer?.phone || '';
+      } catch {
+        customerPhone = '';
+      }
+    }
+
+    const phone = String(customerPhone)
       .replace(/\D/g, '')
       .replace(/^0/, '966');
 
-    const url = phone
-      ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+    if (!phone) {
+      alert('رقم جوال العميل غير موجود');
+      return;
+    }
 
-    window.open(url, '_blank');
+    window.open(
+      `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+      '_blank'
+    );
   }
 
   return (
