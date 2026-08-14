@@ -1,6 +1,5 @@
 import { PageHeader } from '../components/PageHeader';
 import { useApp } from '../context/AppContext';
-import { formatCurrency, formatDate } from '../utils/loyalty';
 
 const paymentLabels: Record<string, string> = {
   cash: 'نقدي',
@@ -29,11 +28,12 @@ export function InvoiceDetailsPage() {
   if (!invoice) {
     return (
       <>
-        <PageHeader title="تفاصيل الفاتورة" subtitle="عرض تفاصيل عملية الغسيل" />
+        <PageHeader title="تفاصيل الفاتورة" subtitle="بيانات الفاتورة" />
+
         <div className="card" style={{ padding: 20 }}>
           <p>لا توجد فاتورة محددة.</p>
+
           <button
-            type="button"
             className="btn btn-secondary"
             onClick={() => navigate('invoices')}
           >
@@ -41,6 +41,19 @@ export function InvoiceDetailsPage() {
           </button>
         </div>
       </>
+    );
+  }
+
+  function sendWhatsApp() {
+    const message = `فاتورتك رقم: ${invoice.invoiceNumber}
+العميل: ${invoice.customerName || '-'}
+السيارة / اللوحة: ${invoice.vehiclePlate || '-'}
+الإجمالي: ${invoice.totalAmount ?? 0} ر.س
+شكراً لاختيارك لنا 🌟`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      '_blank'
     );
   }
 
@@ -55,27 +68,43 @@ export function InvoiceDetailsPage() {
           <div><strong>السيارة / اللوحة:</strong> {invoice.vehiclePlate || '-'}</div>
           <div><strong>الفرع:</strong> {invoice.branchName || '-'}</div>
           <div><strong>الموظف:</strong> {invoice.employeeName || '-'}</div>
-          <div><strong>طريقة الدفع:</strong> {paymentLabels[invoice.paymentMethod] || invoice.paymentMethod || '-'}</div>
-          <div><strong>العضوية:</strong> {membershipLabels[invoice.membershipTier] || 'بدون عضوية'}</div>
+
+          <div>
+            <strong>طريقة الدفع:</strong>{' '}
+            {paymentLabels[invoice.paymentMethod] || invoice.paymentMethod || '-'}
+          </div>
+
+          <div>
+            <strong>العضوية:</strong>{' '}
+            {membershipLabels[invoice.membershipTier] || 'بدون عضوية'}
+          </div>
+
           <div>
             <strong>التاريخ:</strong>{' '}
-            {invoice.createdAt ? formatDate(invoice.createdAt) : '-'}
+            {invoice.createdAt
+              ? new Date(invoice.createdAt).toLocaleString('ar-SA')
+              : '-'}
           </div>
 
-          <hr />
-
-          <div style={{ fontSize: '1.2rem' }}>
-            <strong>الإجمالي:</strong>{' '}
-            {formatCurrency(invoice.totalAmount ?? invoice.amount ?? 0)}
+          <div style={{ fontSize: 22, marginTop: 10 }}>
+            <strong>الإجمالي:</strong> {Number(invoice.totalAmount || 0).toFixed(2)} ر.س
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10 }}>
             <button
               type="button"
               className="btn btn-primary"
               onClick={() => window.print()}
             >
               طباعة الفاتورة
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={sendWhatsApp}
+            >
+              إرسال عبر واتساب
             </button>
 
             <button
