@@ -372,10 +372,15 @@ export function CustomerDetailsPage() {
             {customerInvoices.slice(0, 10).map((invoice: any) => (
               <div
                 key={invoice.id || invoice.invoiceNumber}
+                onClick={() => {
+                  sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
+                  navigate('invoice-details');
+                }}
                 style={{
                   border: '1px solid #e5e7eb',
                   borderRadius: 10,
                   padding: 12,
+                  cursor: 'pointer',
                 }}
               >
                 <div>

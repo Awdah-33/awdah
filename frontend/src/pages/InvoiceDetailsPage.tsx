@@ -2,6 +2,19 @@ import { PageHeader } from '../components/PageHeader';
 import { useApp } from '../context/AppContext';
 import { formatCurrency, formatDate } from '../utils/loyalty';
 
+const paymentLabels: Record<string, string> = {
+  cash: 'نقدي',
+  card: 'بطاقة',
+};
+
+const membershipLabels: Record<string, string> = {
+  none: 'بدون عضوية',
+  bronze: 'برونزية',
+  silver: 'فضية',
+  gold: 'ذهبية',
+  diamond: 'ماسية',
+};
+
 export function InvoiceDetailsPage() {
   const { navigate } = useApp();
 
@@ -42,8 +55,8 @@ export function InvoiceDetailsPage() {
           <div><strong>السيارة / اللوحة:</strong> {invoice.vehiclePlate || '-'}</div>
           <div><strong>الفرع:</strong> {invoice.branchName || '-'}</div>
           <div><strong>الموظف:</strong> {invoice.employeeName || '-'}</div>
-          <div><strong>طريقة الدفع:</strong> {invoice.paymentMethod || '-'}</div>
-          <div><strong>العضوية:</strong> {invoice.membershipTier || 'بدون عضوية'}</div>
+          <div><strong>طريقة الدفع:</strong> {paymentLabels[invoice.paymentMethod] || invoice.paymentMethod || '-'}</div>
+          <div><strong>العضوية:</strong> {membershipLabels[invoice.membershipTier] || 'بدون عضوية'}</div>
           <div>
             <strong>التاريخ:</strong>{' '}
             {invoice.createdAt ? formatDate(invoice.createdAt) : '-'}
