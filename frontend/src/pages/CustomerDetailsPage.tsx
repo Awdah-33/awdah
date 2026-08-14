@@ -18,6 +18,8 @@ const vehicleSizeLabels: Record<string, string> = {
 };
 
 export function CustomerDetailsPage() {
+  const [historySearch, setHistorySearch] = useState('');
+
   const { navigate } = useApp();
 
   let customer: any = null;
@@ -122,6 +124,32 @@ export function CustomerDetailsPage() {
   } catch {
     customerInvoices = [];
   }
+
+  const searchValue = historySearch.trim().toLowerCase();
+
+  const filteredCustomerWashes = customerWashes.filter((wash: any) =>
+    [
+      wash.vehiclePlate,
+      wash.invoiceNumber,
+      ...(Array.isArray(wash.services) ? wash.services : []),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(searchValue)
+  );
+
+  const filteredCustomerInvoices = customerInvoices.filter((invoice: any) =>
+    [
+      invoice.invoiceNumber,
+      invoice.vehiclePlate,
+      invoice.paymentMethod,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(searchValue)
+  );
 
   const vehiclesMap = new Map<any, any>();
 
@@ -395,6 +423,15 @@ export function CustomerDetailsPage() {
 
       <div style={{ height: 16 }} />
 
+      <div className="card" style={{ padding: 16, marginBottom: 16 }}>
+        <input
+          className="form-input"
+          placeholder="بحث برقم الفاتورة أو اللوحة أو الخدمة"
+          value={historySearch}
+          onChange={(e) => setHistorySearch(e.target.value)}
+        />
+      </div>
+
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>
           سجل الغسلات ({customerWashes.length})
@@ -404,7 +441,7 @@ export function CustomerDetailsPage() {
           <p>لا توجد غسلات مسجلة لهذا العميل.</p>
         ) : (
           <div style={{ display: 'grid', gap: 10 }}>
-            {customerWashes.slice(0, 10).map((wash: any) => (
+            {filteredCustomerWashes.slice(0, 10).map((wash: any) => (
               <div
                 key={wash.id}
                 onClick={() => {
@@ -462,7 +499,7 @@ export function CustomerDetailsPage() {
           <p>لا توجد فواتير لهذا العميل.</p>
         ) : (
           <div style={{ display: 'grid', gap: 10 }}>
-            {customerInvoices.slice(0, 10).map((invoice: any) => (
+            {filteredCustomerInvoices.slice(0, 10).map((invoice: any) => (
               <div
                 key={invoice.id || invoice.invoiceNumber}
                 onClick={() => {
