@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
@@ -12,6 +12,9 @@ import type { Customer, PaymentMethod, Service, WashSuccess } from '../types';
 import { calculateWashPreview, formatCurrency } from '../utils/loyalty';
 
 export function RegisterWashPage() {
+  const cameFromCustomerProfile =
+    sessionStorage.getItem('washFromCustomerProfile') === '1';
+
   const savedCustomers = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
   const savedVehicles = JSON.parse(localStorage.getItem('rajaa_vehicles') || '[]');
   const allCustomers: any[] = [...savedCustomers, ...mockCustomers];
@@ -34,6 +37,24 @@ const { navigate } = useApp();
   const [useFreeWash, setUseFreeWash] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState<WashSuccess | null>(null);
+
+  useEffect(() => {
+    const customerId = sessionStorage.getItem('washCustomerId');
+    if (!customerId) return;
+
+    const customer = allCustomers.find(
+      (c: any) => String(c.id) === customerId
+    );
+
+    if (customer) {
+      setSelectedCustomer(customer as any);
+      setSearchQuery('');
+    }
+
+    sessionStorage.removeItem('washCustomerId');
+  }, []);
+
+
 
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
@@ -378,6 +399,29 @@ const { navigate } = useApp();
 
   return (
     <>
+      {cameFromCustomerProfile && (
+        <button
+          type="button"
+          onClick={() => {
+            sessionStorage.removeItem('washFromCustomerProfile');
+            navigate('customer-details');
+          }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontSize: '28px',
+            cursor: 'pointer',
+            padding: '0 0 8px 0',
+            display: 'block',
+            marginRight: 0,
+            marginLeft: 'auto'
+          }}
+          aria-label="العودة لملف العميل"
+        >
+          →
+        </button>
+      )}
+
       <PageHeader
         title="تسجيل غسلة"
         subtitle="سجّل عملية الغسيل بسرعة — الهدف 20–30 ثانية"

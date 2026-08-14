@@ -360,6 +360,28 @@ export function CustomerDetailsPage() {
         </div>
       </div>
 
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            sessionStorage.setItem('washCustomerId', String(customer.id));
+            sessionStorage.setItem('washFromCustomerProfile', '1');
+            navigate('register-wash');
+          }}
+        >
+          تسجيل غسلة لهذا العميل
+        </button>
+
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate('customers')}
+        >
+          العودة للعملاء
+        </button>
+      </div>
+
+      <div style={{ height: 16 }} />
+
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>
           فواتير العميل ({customerInvoices.length})
@@ -398,12 +420,7 @@ export function CustomerDetailsPage() {
         )}
       </div>
 
-      <button
-        className="btn btn-secondary"
-        onClick={() => navigate('customers')}
-      >
-        العودة للعملاء
-      </button>
+
     </>
   );
 }
