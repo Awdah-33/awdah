@@ -18,15 +18,6 @@ export function RegisterWashPage() {
   const allVehicles: any[] = [...savedVehicles, ...mockVehicles];
 const { navigate } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showQuickAddCustomer, setShowQuickAddCustomer] = useState(false);
-  const [quickCustomer, setQuickCustomer] = useState({
-    fullName: '',
-    phone: '',
-    brand: '',
-    plateNumber: '',
-    vehicleSize: 'medium',
-  });
-
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
@@ -221,67 +212,6 @@ const { navigate } = useApp();
     }, 600);
   }
 
-  function saveQuickCustomer() {
-    if (!quickCustomer.fullName.trim() || !quickCustomer.phone.trim()) {
-      alert('أدخل اسم العميل ورقم الجوال');
-      return;
-    }
-
-    const customerId = Date.now();
-    const vehicleId = customerId + 1;
-
-    const newCustomer: any = {
-      id: customerId,
-      fullName: quickCustomer.fullName.trim(),
-      phone: quickCustomer.phone.trim(),
-      membershipTier: 'none',
-      eligibleWashesCount: 0,
-      freeWashesAvailable: 0,
-      vehiclesCount: 1,
-    };
-
-    const newVehicle: any = {
-      id: vehicleId,
-      customerId,
-      plateNumber: quickCustomer.plateNumber.trim(),
-      plateLetters: '',
-      vehicleSize: quickCustomer.vehicleSize,
-      brand: quickCustomer.brand.trim() || 'غير محدد',
-      model: '',
-      color: '',
-    };
-
-    const savedCustomers = JSON.parse(
-      localStorage.getItem('rajaa_customers') || '[]'
-    );
-    const savedVehicles = JSON.parse(
-      localStorage.getItem('rajaa_vehicles') || '[]'
-    );
-
-    localStorage.setItem(
-      'rajaa_customers',
-      JSON.stringify([newCustomer, ...savedCustomers])
-    );
-
-    localStorage.setItem(
-      'rajaa_vehicles',
-      JSON.stringify([newVehicle, ...savedVehicles])
-    );
-
-    setSelectedCustomer(newCustomer);
-    setSelectedVehicleId(vehicleId);
-    setSearchQuery('');
-    setShowQuickAddCustomer(false);
-
-    setQuickCustomer({
-      fullName: '',
-      phone: '',
-      brand: '',
-      plateNumber: '',
-      vehicleSize: 'medium',
-    });
-  }
-
   function resetWash() {
     setSelectedCustomer(null);
     setSelectedVehicleId(null);
@@ -315,104 +245,11 @@ const { navigate } = useApp();
               data-add-customer
               type="button"
               className="btn btn-secondary"
-              onClick={() => setShowQuickAddCustomer((open) => !open)}
+              onClick={() => navigate('customers')}
               style={{ marginBottom: '12px', width: '100%' }}
             >
               + إضافة عميل جديد
             </button>
-
-            {showQuickAddCustomer && (
-              <div
-                data-quick-add-customer-form
-                className="card"
-                style={{ padding: '16px', marginBottom: '14px' }}
-              >
-                <h3 style={{ marginTop: 0 }}>إضافة عميل جديد</h3>
-
-                <div style={{ display: 'grid', gap: '10px' }}>
-                  <input
-                    className="form-input"
-                    placeholder="اسم العميل"
-                    value={quickCustomer.fullName}
-                    onChange={(e) =>
-                      setQuickCustomer({
-                        ...quickCustomer,
-                        fullName: e.target.value,
-                      })
-                    }
-                  />
-
-                  <input
-                    className="form-input"
-                    placeholder="رقم الجوال"
-                    value={quickCustomer.phone}
-                    onChange={(e) =>
-                      setQuickCustomer({
-                        ...quickCustomer,
-                        phone: e.target.value,
-                      })
-                    }
-                  />
-
-                  <input
-                    className="form-input"
-                    placeholder="نوع / ماركة السيارة"
-                    value={quickCustomer.brand}
-                    onChange={(e) =>
-                      setQuickCustomer({
-                        ...quickCustomer,
-                        brand: e.target.value,
-                      })
-                    }
-                  />
-
-                  <input
-                    className="form-input"
-                    placeholder="رقم اللوحة"
-                    value={quickCustomer.plateNumber}
-                    onChange={(e) =>
-                      setQuickCustomer({
-                        ...quickCustomer,
-                        plateNumber: e.target.value,
-                      })
-                    }
-                  />
-
-                  <select
-                    className="form-input"
-                    value={quickCustomer.vehicleSize}
-                    onChange={(e) =>
-                      setQuickCustomer({
-                        ...quickCustomer,
-                        vehicleSize: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="small">صغيرة</option>
-                    <option value="medium">متوسطة</option>
-                    <option value="large">كبيرة</option>
-                  </select>
-
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={saveQuickCustomer}
-                    >
-                      حفظ ومتابعة الغسلة
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setShowQuickAddCustomer(false)}
-                    >
-                      إلغاء
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <input
               type="search"
