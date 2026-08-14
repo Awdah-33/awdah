@@ -305,6 +305,30 @@ const { navigate } = useApp();
 
 
 
+    const washHistory = JSON.parse(
+      localStorage.getItem('rajaa_washes') || '[]'
+    );
+
+    const washVehicle = allVehicles.find(
+      (v: any) => v.id === selectedVehicleId
+    );
+
+    washHistory.unshift({
+      id: Date.now(),
+      customerId: selectedCustomer?.id,
+      customerName: selectedCustomer?.fullName,
+      vehiclePlate: washVehicle?.plateNumber || '-',
+      services: selectedServices.map(
+        (service: any) => service.nameAr
+      ),
+      totalAmount: preview.totalAmount,
+      paymentMethod,
+      freeWash: useFreeWash,
+      createdAt: new Date().toISOString(),
+    });
+
+    localStorage.setItem('rajaa_washes', JSON.stringify(washHistory));
+
     setSuccess({
 
 

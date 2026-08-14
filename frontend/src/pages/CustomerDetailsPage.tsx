@@ -99,6 +99,19 @@ export function CustomerDetailsPage() {
     setSavedVehicles(updated);
   }
 
+  let customerWashes: any[] = [];
+
+  try {
+    const washes = JSON.parse(localStorage.getItem('rajaa_washes') || '[]');
+    customerWashes = washes.filter(
+      (wash: any) =>
+        wash.customerId === customer.id ||
+        wash.customerName === customer.fullName
+    );
+  } catch {
+    customerWashes = [];
+  }
+
   let customerInvoices: any[] = [];
 
   try {
@@ -381,6 +394,45 @@ export function CustomerDetailsPage() {
       </div>
 
       <div style={{ height: 16 }} />
+
+      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+        <h3 style={{ marginTop: 0 }}>
+          سجل الغسلات ({customerWashes.length})
+        </h3>
+
+        {customerWashes.length === 0 ? (
+          <p>لا توجد غسلات مسجلة لهذا العميل.</p>
+        ) : (
+          <div style={{ display: 'grid', gap: 10 }}>
+            {customerWashes.slice(0, 10).map((wash: any) => (
+              <div
+                key={wash.id}
+                style={{
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  padding: 12,
+                }}
+              >
+                <div><strong>اللوحة:</strong> {wash.vehiclePlate || '-'}</div>
+                <div>
+                  <strong>الخدمة:</strong>{' '}
+                  {Array.isArray(wash.services) ? wash.services.join(' + ') : '-'}
+                </div>
+                <div>
+                  <strong>الإجمالي:</strong>{' '}
+                  {wash.freeWash ? 'غسلة مجانية' : `${wash.totalAmount ?? 0} ر.س`}
+                </div>
+                <div>
+                  <strong>التاريخ:</strong>{' '}
+                  {wash.createdAt
+                    ? new Date(wash.createdAt).toLocaleString('ar-SA')
+                    : '-'}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="card" style={{ padding: 20, marginBottom: 16 }}>
         <h3 style={{ marginTop: 0 }}>
