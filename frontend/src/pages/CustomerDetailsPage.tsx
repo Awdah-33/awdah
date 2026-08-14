@@ -227,8 +227,11 @@ export function CustomerDetailsPage() {
                     return `مرحباً ${customer.fullName}`;
                   }
 
+                  const businessName =
+                    localStorage.getItem('rajaa_business_name') || 'المغسلة';
+
                   return `مرحباً ${customer.fullName}
-شكراً لاختيارك لنا 🌟
+شكراً لاختيارك ${businessName} 🌟
 رقم الفاتورة: ${lastInvoice.invoiceNumber}
 اللوحة: ${lastInvoice.vehiclePlate || '-'}
 الإجمالي: ${lastInvoice.totalAmount ?? 0} ر.س
