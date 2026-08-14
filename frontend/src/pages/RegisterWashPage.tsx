@@ -329,6 +329,18 @@ const { navigate } = useApp();
 
     localStorage.setItem('rajaa_washes', JSON.stringify(washHistory));
 
+    sessionStorage.setItem('latestInvoice', JSON.stringify({
+      invoiceNumber: savedInvoiceNumber,
+      customerName: selectedCustomer?.fullName || '-',
+      vehiclePlate: washVehicle?.plateNumber || '-',
+      branchName: 'فرع الرياض',
+      employeeName: 'محمد العتيبي',
+      paymentMethod,
+      membershipTier: updatedMembershipTier,
+      createdAt: new Date().toISOString(),
+      totalAmount: preview.totalAmount,
+    }));
+
     setSuccess({
 
 
@@ -762,12 +774,7 @@ const { navigate } = useApp();
                 type="button"
                 className="btn btn-primary"
                 onClick={() => {
-                  if (success) {
-                    sessionStorage.setItem(
-                      'latestInvoice',
-                      JSON.stringify(success)
-                    );
-                  }
+                  
                   navigate('invoice-details');
                 }}
               >
