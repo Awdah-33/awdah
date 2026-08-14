@@ -407,10 +407,21 @@ export function CustomerDetailsPage() {
             {customerWashes.slice(0, 10).map((wash: any) => (
               <div
                 key={wash.id}
+                onClick={() => {
+                  if (!wash.invoiceNumber) return;
+                  const invoice = customerInvoices.find(
+                    (i: any) => i.invoiceNumber === wash.invoiceNumber
+                  );
+                  if (!invoice) return;
+
+                  sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
+                  navigate('invoice-details');
+                }}
                 style={{
                   border: '1px solid #e5e7eb',
                   borderRadius: 10,
                   padding: 12,
+                  cursor: wash.invoiceNumber ? 'pointer' : 'default',
                 }}
               >
                 <div><strong>اللوحة:</strong> {wash.vehiclePlate || '-'}</div>
