@@ -95,7 +95,14 @@ export function DashboardPage() {
               </thead>
               <tbody>
                 {recentInvoices.map((invoice) => (
-                  <tr key={invoice.id}>
+                  <tr
+              key={invoice.id}
+              onClick={() => {
+                sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
+                navigate('invoice-details');
+              }}
+              style={{ cursor: 'pointer' }}
+            >
                     <td>{invoice.invoiceNumber}</td>
                     <td>{invoice.customerName}</td>
                     <td>{formatCurrency(invoice.totalAmount)}</td>
@@ -107,7 +114,15 @@ export function DashboardPage() {
           </div>
           <div className="mobile-card-list">
             {recentInvoices.map((invoice) => (
-              <div key={invoice.id} className="mobile-list-card">
+              <div
+            key={invoice.id}
+            className="mobile-list-card"
+            onClick={() => {
+              sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
+              navigate('invoice-details');
+            }}
+            style={{ cursor: 'pointer' }}
+          >
                 <div className="mobile-list-card-row">
                   <span className="mobile-list-card-title">{invoice.invoiceNumber}</span>
                   <span>{formatCurrency(invoice.totalAmount)}</span>
