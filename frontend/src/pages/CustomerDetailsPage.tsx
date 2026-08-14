@@ -99,6 +99,17 @@ export function CustomerDetailsPage() {
     setSavedVehicles(updated);
   }
 
+  let customerInvoices: any[] = [];
+
+  try {
+    const invoices = JSON.parse(localStorage.getItem('rajaa_invoices') || '[]');
+    customerInvoices = invoices.filter(
+      (invoice: any) => invoice.customerName === customer.fullName
+    );
+  } catch {
+    customerInvoices = [];
+  }
+
   const vehiclesMap = new Map<any, any>();
 
   [...savedVehicles, ...mockVehicles].forEach((vehicle: any) => {
@@ -347,6 +358,39 @@ export function CustomerDetailsPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+        <h3 style={{ marginTop: 0 }}>
+          فواتير العميل ({customerInvoices.length})
+        </h3>
+
+        {customerInvoices.length === 0 ? (
+          <p>لا توجد فواتير لهذا العميل.</p>
+        ) : (
+          <div style={{ display: 'grid', gap: 10 }}>
+            {customerInvoices.slice(0, 10).map((invoice: any) => (
+              <div
+                key={invoice.id || invoice.invoiceNumber}
+                style={{
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  padding: 12,
+                }}
+              >
+                <div>
+                  <strong>رقم الفاتورة:</strong> {invoice.invoiceNumber}
+                </div>
+                <div>
+                  <strong>الإجمالي:</strong> {invoice.totalAmount ?? 0} ر.س
+                </div>
+                <div>
+                  <strong>اللوحة:</strong> {invoice.vehiclePlate || '-'}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <button
