@@ -1,15 +1,45 @@
 import { PageHeader } from '../components/PageHeader';
 import {
-  mockDashboardStats,
-  mockInvoices,
   mockServices,
   membershipTierLabels,
 } from '../data/mockData';
 import { formatCurrency, formatDate } from '../utils/loyalty';
 
 export function DashboardPage() {
-  const stats = mockDashboardStats;
-  const recentInvoices = mockInvoices.slice(0, 4);
+  const savedInvoices: any[] = JSON.parse(
+    localStorage.getItem('rajaa_invoices') || '[]'
+  );
+  const savedWashes: any[] = JSON.parse(
+    localStorage.getItem('rajaa_washes') || '[]'
+  );
+  const savedCustomers: any[] = JSON.parse(
+    localStorage.getItem('rajaa_customers') || '[]'
+  );
+
+  const today = new Date().toDateString();
+  const isToday = (date?: string) =>
+    date ? new Date(date).toDateString() === today : false;
+
+  const todayInvoices = savedInvoices.filter((x) => isToday(x.createdAt));
+  const todayWashes = savedWashes.filter((x) => isToday(x.createdAt));
+
+  const stats = {
+    todayRevenue: todayInvoices.reduce(
+      (sum, x) => sum + Number(x.totalAmount || 0),
+      0
+    ),
+    todayWashes: todayWashes.length,
+    totalCustomers: savedCustomers.length,
+    activeMembers: savedCustomers.filter(
+      (x) => x.membershipTier && x.membershipTier !== 'none'
+    ).length,
+    newCustomers: savedCustomers.filter(
+      (x) => typeof x.id === 'number' &&
+        new Date(x.id).toDateString() === today
+    ).length,
+  };
+
+  const recentInvoices = savedInvoices.slice(0, 4);
   const topServices = mockServices.filter((s) => s.loyaltyEligible).slice(0, 3);
 
   return (
