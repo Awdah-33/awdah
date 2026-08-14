@@ -17,18 +17,10 @@ export function getTierFromWashes(count: number): MembershipTier {
 }
 
 export function getDiscountForCustomer(customer: Customer): number {
-  switch (customer.membershipTier) {
-    case 'bronze':
-      return 5;
-    case 'silver':
-      return 10;
-    case 'gold':
-      return 15;
-    case 'diamond':
-      return 20;
-    default:
-      return 0;
+  if (customer.membershipStatus !== 'active') {
+    return 0;
   }
+  return customer.discountPercentage;
 }
 
 export function calculateWashPreview(

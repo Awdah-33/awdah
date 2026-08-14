@@ -79,134 +79,13 @@ const { navigate } = useApp();
     }
     setIsSubmitting(true);
     setTimeout(() => {
-      let updatedEligibleWashesCount =
-      selectedCustomer?.eligibleWashesCount ?? 0;
-
-    let updatedMembershipTier =
-      selectedCustomer?.membershipTier ?? 'none';
-
-    const washIsLoyaltyEligible = selectedServices.some(
-      (service: any) => service.loyaltyEligible === true
-    );
-
-    if (washIsLoyaltyEligible && selectedCustomer) {
-      updatedEligibleWashesCount += 1;
-
-      if (updatedEligibleWashesCount >= 20) {
-        updatedMembershipTier = 'diamond';
-      } else if (updatedEligibleWashesCount >= 15) {
-        updatedMembershipTier = 'gold';
-      } else if (updatedEligibleWashesCount >= 10) {
-        updatedMembershipTier = 'silver';
-      } else if (updatedEligibleWashesCount >= 5) {
-        updatedMembershipTier = 'bronze';
-      } else {
-        updatedMembershipTier = 'none';
-      }
-
-      const savedCustomers = JSON.parse(
-        localStorage.getItem('rajaa_customers') || '[]'
-      );
-
-      const updatedCustomers = savedCustomers.map((customer: any) =>
-        customer.id === selectedCustomer.id
-          ? {
-              ...customer,
-              eligibleWashesCount: useFreeWash ? (selectedCustomer?.eligibleWashesCount ?? 0) : updatedEligibleWashesCount,
-              membershipTier: useFreeWash ? (selectedCustomer?.membershipTier ?? 'none') : updatedMembershipTier,
-              freeWashesAvailable:
-          (selectedCustomer?.freeWashesAvailable ?? 0) +
-          (
-            updatedMembershipTier !== (selectedCustomer?.membershipTier ?? 'none') &&
-            updatedMembershipTier !== 'none'
-              ? 1
-              : 0
-          ),
-            }
-          : customer
-      );
-
-      localStorage.setItem(
-        'rajaa_customers',
-        JSON.stringify(updatedCustomers)
-      );
-
-      setSelectedCustomer({
-        ...selectedCustomer,
-        eligibleWashesCount: updatedEligibleWashesCount,
-        membershipTier: updatedMembershipTier as any,
-        freeWashesAvailable:
-          (selectedCustomer?.freeWashesAvailable ?? 0) +
-          (
-            updatedMembershipTier !== (selectedCustomer?.membershipTier ?? 'none') &&
-            updatedMembershipTier !== 'none'
-              ? 1
-              : 0
-          ),
-      });
-    }
-
-    const previousTier = selectedCustomer?.membershipTier ?? 'none';
-    const nextEligibleCount =
-      (selectedCustomer?.eligibleWashesCount ?? 0) +
-      (preview.loyaltyEligible && !useFreeWash ? 1 : 0);
-
-    let nextTier = previousTier;
-
-    if (nextEligibleCount >= 20) nextTier = 'diamond';
-    else if (nextEligibleCount >= 15) nextTier = 'gold';
-    else if (nextEligibleCount >= 10) nextTier = 'silver';
-    else if (nextEligibleCount >= 5) nextTier = 'bronze';
-    else nextTier = 'none';
-
-    const wasPromoted =
-      preview.loyaltyEligible &&
-      nextTier !== previousTier &&
-      nextTier !== 'none';
-
-    // استهلاك الغسلة المجانية بدون احتسابها ضمن الغسلات المؤهلة
-    if (useFreeWash && selectedCustomer) {
-      const remainingFreeWashes = Math.max(
-        0,
-        (selectedCustomer.freeWashesAvailable ?? 0) - 1
-      );
-
-      const savedCustomers = JSON.parse(
-        localStorage.getItem('rajaa_customers') || '[]'
-      );
-
-      const exists = savedCustomers.some(
-        (customer: any) => customer.id === selectedCustomer.id
-      );
-
-      const updatedCustomer = {
-        ...selectedCustomer,
-        freeWashesAvailable: remainingFreeWashes,
-      };
-
-      const updatedCustomers = exists
-        ? savedCustomers.map((customer: any) =>
-            customer.id === selectedCustomer.id
-              ? updatedCustomer
-              : customer
-          )
-        : [updatedCustomer, ...savedCustomers];
-
-      localStorage.setItem(
-        'rajaa_customers',
-        JSON.stringify(updatedCustomers)
-      );
-
-      setSelectedCustomer(updatedCustomer);
-    }
-
-    setSuccess({
+      setSuccess({
         invoiceNumber: `INV-2026-${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`,
         totalAmount: preview.totalAmount,
-        membershipTier: updatedMembershipTier as any,
-        eligibleWashesCount: updatedEligibleWashesCount,
-        promoted: useFreeWash ? false : wasPromoted,
-        freeWashEarned: useFreeWash ? false : wasPromoted,
+        membershipTier: selectedCustomer.membershipTier,
+        eligibleWashesCount: selectedCustomer.eligibleWashesCount + (preview.loyaltyEligible ? 1 : 0),
+        promoted: false,
+        freeWashEarned: false,
       });
       setIsSubmitting(false);
     }, 600);
@@ -441,18 +320,10 @@ const { navigate } = useApp();
             </p>
             <div className="success-actions">
               <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => {
-                  if (success) {
-                    sessionStorage.setItem(
-                      'latestInvoice',
-                      JSON.stringify(success)
-                    );
-                  }
-                  navigate('invoice-details');
-                }}
-              >
+  type="button"
+  className="btn btn-primary"
+  onClick={() => navigate('invoices')}
+>
                 عرض الفاتورة
               </button>
               <button type="button" className="btn btn-secondary">

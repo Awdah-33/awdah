@@ -112,8 +112,8 @@ const { navigate } = useApp();
         customer.id === selectedCustomer.id
           ? {
               ...customer,
-              eligibleWashesCount: useFreeWash ? (selectedCustomer?.eligibleWashesCount ?? 0) : updatedEligibleWashesCount,
-              membershipTier: useFreeWash ? (selectedCustomer?.membershipTier ?? 'none') : updatedMembershipTier,
+              eligibleWashesCount: updatedEligibleWashesCount,
+              membershipTier: updatedMembershipTier,
               freeWashesAvailable:
           (selectedCustomer?.freeWashesAvailable ?? 0) +
           (
@@ -149,7 +149,7 @@ const { navigate } = useApp();
     const previousTier = selectedCustomer?.membershipTier ?? 'none';
     const nextEligibleCount =
       (selectedCustomer?.eligibleWashesCount ?? 0) +
-      (preview.loyaltyEligible && !useFreeWash ? 1 : 0);
+      (preview.loyaltyEligible ? 1 : 0);
 
     let nextTier = previousTier;
 
@@ -164,49 +164,13 @@ const { navigate } = useApp();
       nextTier !== previousTier &&
       nextTier !== 'none';
 
-    // استهلاك الغسلة المجانية بدون احتسابها ضمن الغسلات المؤهلة
-    if (useFreeWash && selectedCustomer) {
-      const remainingFreeWashes = Math.max(
-        0,
-        (selectedCustomer.freeWashesAvailable ?? 0) - 1
-      );
-
-      const savedCustomers = JSON.parse(
-        localStorage.getItem('rajaa_customers') || '[]'
-      );
-
-      const exists = savedCustomers.some(
-        (customer: any) => customer.id === selectedCustomer.id
-      );
-
-      const updatedCustomer = {
-        ...selectedCustomer,
-        freeWashesAvailable: remainingFreeWashes,
-      };
-
-      const updatedCustomers = exists
-        ? savedCustomers.map((customer: any) =>
-            customer.id === selectedCustomer.id
-              ? updatedCustomer
-              : customer
-          )
-        : [updatedCustomer, ...savedCustomers];
-
-      localStorage.setItem(
-        'rajaa_customers',
-        JSON.stringify(updatedCustomers)
-      );
-
-      setSelectedCustomer(updatedCustomer);
-    }
-
     setSuccess({
         invoiceNumber: `INV-2026-${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`,
         totalAmount: preview.totalAmount,
         membershipTier: updatedMembershipTier as any,
         eligibleWashesCount: updatedEligibleWashesCount,
-        promoted: useFreeWash ? false : wasPromoted,
-        freeWashEarned: useFreeWash ? false : wasPromoted,
+        promoted: wasPromoted,
+        freeWashEarned: wasPromoted,
       });
       setIsSubmitting(false);
     }, 600);
