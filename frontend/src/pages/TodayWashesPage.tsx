@@ -66,6 +66,7 @@ export function TodayWashesPage() {
                   JSON.stringify(invoice)
                 );
 
+                sessionStorage.setItem('invoiceBackTo', 'today-washes');
                 navigate('invoice-details');
               }}
             >
