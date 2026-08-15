@@ -74,10 +74,17 @@ export function DashboardPage() {
           <div className="stat-label">إجمالي العملاء</div>
           <div className="stat-value">{stats.totalCustomers.toLocaleString('ar-SA')}</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-label">أعضاء جدد اليوم</div>
-          <div className="stat-value">{stats.newCustomers}</div>
-        </div>
+        <div
+        className="stat-card"
+        onClick={() => {
+          sessionStorage.setItem('customersTodayOnly', '1');
+          navigate('customers');
+        }}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="stat-label">أعضاء جدد اليوم</div>
+        <div className="stat-value">{stats.newCustomers}</div>
+      </div>
       </div>
 
       <div style={{ display: 'grid', gap: '1rem' }}>

@@ -38,6 +38,11 @@ export function CustomersPage() {
   }
 
   const [search, setSearch] = useState('');
+  const [todayOnly] = useState(() => {
+    const active = sessionStorage.getItem('customersTodayOnly') === '1';
+    sessionStorage.removeItem('customersTodayOnly');
+    return active;
+  });
   const [showAdd, setShowAdd] = useState(false);
 
   const [form, setForm] = useState({
@@ -50,15 +55,26 @@ export function CustomersPage() {
 
   const filteredCustomers = useMemo(() => {
     const q = search.trim();
-    if (!q) return customers;
+    let result = customers;
 
-    return customers.filter(
+    if (todayOnly) {
+      const today = new Date().toDateString();
+      result = result.filter((customer) => {
+        const id = Number(customer.id);
+        return id > 1000000000000 &&
+          new Date(id).toDateString() === today;
+      });
+    }
+
+    if (!q) return result;
+
+    return result.filter(
       (customer) =>
         customer.fullName.includes(q) ||
         customer.phone.includes(q) ||
         (customer.plateNumber || '').includes(q)
     );
-  }, [customers, search]);
+  }, [customers, search, todayOnly]);
 
   function saveCustomer() {
     if (!form.fullName.trim() || !form.phone.trim()) {
