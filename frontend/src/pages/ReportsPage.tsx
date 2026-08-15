@@ -2,7 +2,6 @@ import { PageHeader } from '../components/PageHeader';
 import { paymentMethodLabels } from '../data/mockData';
 import { formatCurrency } from '../utils/loyalty';
 
-const chartHeights = [45, 62, 38, 75, 55, 88, 70];
 
 
 export function ReportsPage() {
@@ -80,6 +79,67 @@ export function ReportsPage() {
       : 0,
   }));
 
+  const last7Days = Array.from({ length: 7 }, (_, index) => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (6 - index));
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    const revenue = invoices
+      .filter((invoice) => {
+        if (!invoice.createdAt) return false;
+        const date = new Date(invoice.createdAt);
+        return date >= start && date < end;
+      })
+      .reduce(
+        (sum, invoice) => sum + Number(invoice.totalAmount || 0),
+        0
+      );
+
+    return {
+      label: start.toLocaleDateString('ar-SA', { weekday: 'short' }),
+      revenue,
+    };
+  });
+
+  const maxRevenue = Math.max(
+    ...last7Days.map((day) => day.revenue),
+    1
+  );
+
+  const chartHeights = last7Days.map((day) =>
+    day.revenue > 0
+      ? Math.max(8, Math.round((day.revenue / maxRevenue) * 100))
+      : 2
+  );
+
+  const serviceCounts: Record<string, number> = {};
+
+  washes.forEach((wash) => {
+    const services = Array.isArray(wash.services)
+      ? wash.services
+      : wash.serviceName
+        ? [wash.serviceName]
+        : [];
+
+    services.forEach((service: any) => {
+      const name =
+        typeof service === 'string'
+          ? service
+          : service?.nameAr || service?.name || '';
+
+      if (name) {
+        serviceCounts[name] = (serviceCounts[name] || 0) + 1;
+      }
+    });
+  });
+
+  const topServices = Object.entries(serviceCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
   return (
     <>
       <PageHeader title="التقارير" subtitle="إحصائيات الإيرادات والعمليات" />
@@ -112,7 +172,7 @@ export function ReportsPage() {
                 key={index}
                 className="chart-bar"
                 style={{ height: `${height}%` }}
-                title={`اليوم ${index + 1}`}
+                title={`${last7Days[index]?.label || ''}: ${formatCurrency(last7Days[index]?.revenue || 0)}`}
               />
             ))}
           </div>
@@ -144,18 +204,19 @@ export function ReportsPage() {
 
         <div className="card">
           <h3 className="card-title">أفضل الخدمات</h3>
-          <div className="settings-row">
-            <span>غسيل خارجي + داخلي</span>
-            <span className="settings-value">156 غسلة</span>
-          </div>
-          <div className="settings-row">
-            <span>VIP</span>
-            <span className="settings-value">42 غسلة</span>
-          </div>
-          <div className="settings-row">
-            <span>غسيل خارجي</span>
-            <span className="settings-value">89 غسلة</span>
-          </div>
+
+          {topServices.length === 0 ? (
+            <div className="settings-row">
+              <span>لا توجد غسلات مسجلة بعد</span>
+            </div>
+          ) : (
+            topServices.map(([name, count]) => (
+              <div className="settings-row" key={name}>
+                <span>{name}</span>
+                <span className="settings-value">{count} غسلة</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>
