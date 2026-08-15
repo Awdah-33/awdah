@@ -19,8 +19,19 @@ export function CustomersPage() {
   const { navigate } = useApp();
   const [customers, setCustomers] = useState<LocalCustomer[]>(() => {
     const saved = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
+    const savedVehicles = JSON.parse(localStorage.getItem('rajaa_vehicles') || '[]');
+
     return [
-      ...saved,
+      ...saved.map((customer: any) => ({
+        ...customer,
+        plateNumber:
+          customer.plateNumber ||
+          savedVehicles.find(
+            (vehicle: any) =>
+              String(vehicle.customerId) === String(customer.id)
+          )?.plateNumber ||
+          '',
+      })),
       ...mockCustomers
         .filter((c: any) => !saved.some((x: any) => x.id === c.id))
         .map((c: any) => ({
