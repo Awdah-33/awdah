@@ -25,6 +25,17 @@ export function InvoiceDetailsPage() {
     invoice = null;
   }
 
+  function goBackToSource() {
+    const backTo = sessionStorage.getItem('invoiceBackTo');
+    sessionStorage.removeItem('invoiceBackTo');
+
+    if (backTo === 'today-washes') {
+      navigate('today-washes');
+    } else {
+      navigate('invoices');
+    }
+  }
+
   if (!invoice) {
     return (
       <>
@@ -35,7 +46,7 @@ export function InvoiceDetailsPage() {
 
           <button
             className="btn btn-secondary"
-            onClick={() => navigate('invoices')}
+            onClick={goBackToSource}
           >
             العودة إلى الفواتير
           </button>
@@ -93,7 +104,7 @@ export function InvoiceDetailsPage() {
     <>
       <button
         type="button"
-        onClick={() => navigate('invoices')}
+        onClick={goBackToSource}
         className="btn btn-secondary"
         style={{ marginBottom: 12 }}
       >
@@ -151,7 +162,7 @@ export function InvoiceDetailsPage() {
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => navigate('invoices')}
+              onClick={goBackToSource}
             >
               العودة إلى الفواتير
             </button>
