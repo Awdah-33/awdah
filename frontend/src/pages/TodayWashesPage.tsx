@@ -38,7 +38,37 @@ export function TodayWashesPage() {
           </div>
         ) : (
           todayWashes.map((wash: any) => (
-            <div key={wash.id} className="card" style={{ padding: 16 }}>
+            <div
+              key={wash.id}
+              className="card"
+              style={{ padding: 16, cursor: 'pointer' }}
+              onClick={() => {
+                const invoices = JSON.parse(
+                  localStorage.getItem('rajaa_invoices') || '[]'
+                );
+
+                const invoice = invoices.find(
+                  (x: any) =>
+                    x.vehiclePlate === wash.vehiclePlate &&
+                    Math.abs(
+                      new Date(x.createdAt).getTime() -
+                      new Date(wash.createdAt).getTime()
+                    ) < 120000
+                );
+
+                if (!invoice) {
+                  alert('لم يتم العثور على فاتورة مرتبطة بهذه الغسلة');
+                  return;
+                }
+
+                sessionStorage.setItem(
+                  'latestInvoice',
+                  JSON.stringify(invoice)
+                );
+
+                navigate('invoice-details');
+              }}
+            >
               <div><strong>العميل:</strong> {wash.customerName || '-'}</div>
               <div><strong>اللوحة:</strong> {wash.vehiclePlate || '-'}</div>
               <div>
