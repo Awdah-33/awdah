@@ -220,7 +220,7 @@ export function ReportsPage() {
             navigate('customers');
           }}
         >
-          <div className="stat-label">عملاء جدد</div>
+          <div className="stat-label">أعضاء جدد</div>
           <div className="stat-value">{stats.newCustomers}</div>
         </div>
       </div>
