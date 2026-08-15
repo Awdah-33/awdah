@@ -5,6 +5,8 @@ import { formatCurrency, formatDate } from '../utils/loyalty';
 
 export function InvoicesPage() {
   const { navigate } = useApp();
+  const backToReports = sessionStorage.getItem('pageBackTo') === 'reports';
+
 
   function openInvoice(invoice: any) {
     sessionStorage.setItem('latestInvoice', JSON.stringify(invoice));
@@ -17,6 +19,20 @@ export function InvoicesPage() {
   const allInvoices = [...savedInvoices, ...mockInvoices];
   return (
     <>
+      {backToReports && (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ marginBottom: 12 }}
+          onClick={() => {
+            sessionStorage.removeItem('pageBackTo');
+            navigate('reports');
+          }}
+        >
+          → الرجوع إلى التقارير
+        </button>
+      )}
+
       <PageHeader title="الفواتير" subtitle="عرض وإدارة الفواتير" />
 
       <div className="card desktop-table">

@@ -15,6 +15,7 @@ type LocalCustomer = {
 };
 
 export function CustomersPage() {
+  const backToReports = sessionStorage.getItem('pageBackTo') === 'reports';
   const { navigate } = useApp();
   const [customers, setCustomers] = useState<LocalCustomer[]>(() => {
     const saved = JSON.parse(localStorage.getItem('rajaa_customers') || '[]');
@@ -138,6 +139,20 @@ export function CustomersPage() {
 
   return (
     <>
+      {backToReports && (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ marginBottom: 12 }}
+          onClick={() => {
+            sessionStorage.removeItem('pageBackTo');
+            navigate('reports');
+          }}
+        >
+          → الرجوع إلى التقارير
+        </button>
+      )}
+
       <PageHeader title="العملاء" subtitle="إدارة بيانات العملاء والسيارات" />
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
