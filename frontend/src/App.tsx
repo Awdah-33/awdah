@@ -9,6 +9,7 @@ import { InvoicesPage } from './pages/InvoicesPage';
 import { InvoiceDetailsPage } from './pages/InvoiceDetailsPage';
 import { LoyaltyPage } from './pages/LoyaltyPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { TodayWashesPage } from './pages/TodayWashesPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 function AppPages() {
@@ -31,6 +32,8 @@ function AppPages() {
       return <LoyaltyPage />;
     case 'reports':
       return <ReportsPage />;
+    case 'today-washes':
+      return <TodayWashesPage />;
     case 'settings':
       return <SettingsPage />;
     default:

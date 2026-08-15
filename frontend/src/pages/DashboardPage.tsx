@@ -66,10 +66,14 @@ export function DashboardPage() {
           <div className="stat-label">إيرادات اليوم</div>
           <div className="stat-value">{formatCurrency(stats.todayRevenue)}</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-label">غسلات اليوم</div>
-          <div className="stat-value">{stats.todayWashes}</div>
-        </div>
+        <div
+        className="stat-card"
+        onClick={() => navigate('today-washes')}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="stat-label">غسلات اليوم</div>
+        <div className="stat-value">{stats.todayWashes}</div>
+      </div>
         <div className="stat-card">
           <div className="stat-label">إجمالي العملاء</div>
           <div className="stat-value">{stats.totalCustomers.toLocaleString('ar-SA')}</div>

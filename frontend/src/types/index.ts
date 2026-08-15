@@ -91,7 +91,8 @@ export type AppPage =
   | 'invoices'
   | 'loyalty'
   | 'reports'
-  | 'settings';
+  | 'settings'
+  | 'today-washes';
 
 export interface WashPreview {
   subtotal: number;
