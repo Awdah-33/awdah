@@ -199,8 +199,16 @@ export function ReportsPage() {
           <div className="stat-label">إيرادات الفترة</div>
           <div className="stat-value">{formatCurrency(stats.todayRevenue)}</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-label">غسلات اليوم</div>
+        <div
+          className="stat-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            sessionStorage.setItem('pageBackTo', 'reports');
+            sessionStorage.setItem('reportsPeriod', period);
+            navigate('today-washes');
+          }}
+        >
+          <div className="stat-label">غسلات الفترة</div>
           <div className="stat-value">{stats.todayWashes}</div>
         </div>
         <div

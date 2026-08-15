@@ -8,27 +8,57 @@ export function TodayWashesPage() {
     localStorage.getItem('rajaa_washes') || '[]'
   );
 
-  const today = new Date().toDateString();
+  const backToReports =
+    sessionStorage.getItem('pageBackTo') === 'reports';
 
-  const todayWashes = washes.filter((wash) =>
-    wash.createdAt &&
-    new Date(wash.createdAt).toDateString() === today
-  );
+  const reportPeriod =
+    sessionStorage.getItem('reportsPeriod') || 'today';
+
+  const now = new Date();
+  const startDate = new Date(now);
+  startDate.setHours(0, 0, 0, 0);
+
+  if (backToReports && reportPeriod === '7d') {
+    startDate.setDate(startDate.getDate() - 6);
+  } else if (backToReports && reportPeriod === '30d') {
+    startDate.setDate(startDate.getDate() - 29);
+  }
+
+  const todayWashes = washes.filter((wash) => {
+    if (!wash.createdAt) return false;
+    const date = new Date(wash.createdAt);
+    return date >= startDate && date <= now;
+  });
+
+  const periodLabel = !backToReports
+    ? 'اليوم'
+    : reportPeriod === '30d'
+      ? 'آخر 30 يوم'
+      : reportPeriod === '7d'
+        ? 'آخر 7 أيام'
+        : 'اليوم';
 
   return (
     <>
       <button
         type="button"
         className="btn btn-secondary"
-        onClick={() => navigate('dashboard')}
+        onClick={() => {
+            if (backToReports) {
+              sessionStorage.removeItem('pageBackTo');
+              navigate('reports');
+            } else {
+              navigate('dashboard');
+            }
+          }}
         style={{ marginBottom: 12 }}
       >
         → الرجوع
       </button>
 
       <PageHeader
-        title="غسلات اليوم"
-        subtitle={`إجمالي الغسلات اليوم: ${todayWashes.length}`}
+        title={backToReports ? 'غسلات الفترة' : 'غسلات اليوم'}
+        subtitle={`الفترة: ${periodLabel} — إجمالي الغسلات: ${todayWashes.length}`}
       />
 
       <div style={{ display: 'grid', gap: 12 }}>
