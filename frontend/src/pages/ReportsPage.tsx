@@ -1,18 +1,84 @@
 import { PageHeader } from '../components/PageHeader';
-import { mockDashboardStats, paymentMethodLabels } from '../data/mockData';
+import { paymentMethodLabels } from '../data/mockData';
 import { formatCurrency } from '../utils/loyalty';
 
 const chartHeights = [45, 62, 38, 75, 55, 88, 70];
 
-const paymentBreakdown = [
-  { method: 'cash' as const, amount: 1240, percentage: 44 },
-  { method: 'card' as const, amount: 980, percentage: 35 },
-  { method: 'transfer' as const, amount: 420, percentage: 15 },
-  { method: 'other' as const, amount: 207.5, percentage: 6 },
-];
 
 export function ReportsPage() {
-  const stats = mockDashboardStats;
+  const invoices: any[] = JSON.parse(
+    localStorage.getItem('rajaa_invoices') || '[]'
+  );
+
+  const washes: any[] = JSON.parse(
+    localStorage.getItem('rajaa_washes') || '[]'
+  );
+
+  const customers: any[] = JSON.parse(
+    localStorage.getItem('rajaa_customers') || '[]'
+  );
+
+  const today = new Date().toDateString();
+
+  const todayInvoices = invoices.filter(
+    (x) => x.createdAt && new Date(x.createdAt).toDateString() === today
+  );
+
+  const todayWashes = washes.filter(
+    (x) => x.createdAt && new Date(x.createdAt).toDateString() === today
+  );
+
+  const newCustomers = customers.filter((x) => {
+    const id = Number(x.id);
+    return id > 1000000000000 &&
+      new Date(id).toDateString() === today;
+  });
+
+  const stats = {
+    todayRevenue: todayInvoices.reduce(
+      (sum, x) => sum + Number(x.totalAmount || 0),
+      0
+    ),
+    todayWashes: todayWashes.length,
+    newCustomers: newCustomers.length,
+    activeMembers: customers.filter(
+      (x) => x.membershipTier && x.membershipTier !== 'none'
+    ).length,
+  };
+
+  const paymentTotals = {
+    cash: 0,
+    card: 0,
+    transfer: 0,
+    other: 0,
+  };
+
+  todayInvoices.forEach((invoice) => {
+    const method = invoice.paymentMethod;
+
+    if (method === 'cash') paymentTotals.cash += Number(invoice.totalAmount || 0);
+    else if (method === 'card') paymentTotals.card += Number(invoice.totalAmount || 0);
+    else if (method === 'transfer') paymentTotals.transfer += Number(invoice.totalAmount || 0);
+    else paymentTotals.other += Number(invoice.totalAmount || 0);
+  });
+
+  const totalPayments =
+    paymentTotals.cash +
+    paymentTotals.card +
+    paymentTotals.transfer +
+    paymentTotals.other;
+
+  const paymentBreakdown = [
+    { method: 'cash' as const, amount: paymentTotals.cash },
+    { method: 'card' as const, amount: paymentTotals.card },
+    { method: 'transfer' as const, amount: paymentTotals.transfer },
+    { method: 'other' as const, amount: paymentTotals.other },
+  ].map((item) => ({
+    ...item,
+    percentage: totalPayments > 0
+      ? Math.round((item.amount / totalPayments) * 100)
+      : 0,
+  }));
 
   return (
     <>
