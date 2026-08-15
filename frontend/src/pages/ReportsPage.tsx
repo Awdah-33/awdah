@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { paymentMethodLabels } from '../data/mockData';
 import { formatCurrency } from '../utils/loyalty';
@@ -5,6 +6,8 @@ import { formatCurrency } from '../utils/loyalty';
 
 
 export function ReportsPage() {
+  const [period, setPeriod] = useState<'today' | '7d' | '30d'>('today');
+
   const invoices: any[] = JSON.parse(
     localStorage.getItem('rajaa_invoices') || '[]'
   );
@@ -17,29 +20,37 @@ export function ReportsPage() {
     localStorage.getItem('rajaa_customers') || '[]'
   );
 
-  const today = new Date().toDateString();
+  const now = new Date();
+  const startDate = new Date(now);
 
-  const todayInvoices = invoices.filter(
-    (x) => x.createdAt && new Date(x.createdAt).toDateString() === today
-  );
+  if (period === 'today') {
+    startDate.setHours(0, 0, 0, 0);
+  } else if (period === '7d') {
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - 6);
+  } else {
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - 29);
+  }
 
-  const todayWashes = washes.filter(
-    (x) => x.createdAt && new Date(x.createdAt).toDateString() === today
-  );
+  const inPeriod = (date?: string) =>
+    !!date && new Date(date) >= startDate && new Date(date) <= now;
 
-  const newCustomers = customers.filter((x) => {
+  const periodInvoices = invoices.filter((x) => inPeriod(x.createdAt));
+  const periodWashes = washes.filter((x) => inPeriod(x.createdAt));
+
+  const periodCustomers = customers.filter((x) => {
     const id = Number(x.id);
-    return id > 1000000000000 &&
-      new Date(id).toDateString() === today;
+    return id > 1000000000000 && new Date(id) >= startDate;
   });
 
   const stats = {
-    todayRevenue: todayInvoices.reduce(
+    todayRevenue: periodInvoices.reduce(
       (sum, x) => sum + Number(x.totalAmount || 0),
       0
     ),
-    todayWashes: todayWashes.length,
-    newCustomers: newCustomers.length,
+    todayWashes: periodWashes.length,
+    newCustomers: periodCustomers.length,
     activeMembers: customers.filter(
       (x) => x.membershipTier && x.membershipTier !== 'none'
     ).length,
@@ -52,7 +63,7 @@ export function ReportsPage() {
     other: 0,
   };
 
-  todayInvoices.forEach((invoice) => {
+  periodInvoices.forEach((invoice) => {
     const method = invoice.paymentMethod;
 
     if (method === 'cash') paymentTotals.cash += Number(invoice.totalAmount || 0);
@@ -79,10 +90,12 @@ export function ReportsPage() {
       : 0,
   }));
 
-  const last7Days = Array.from({ length: 7 }, (_, index) => {
+  const chartDays = period === 'today' ? 1 : period === '7d' ? 7 : 30;
+
+  const last7Days = Array.from({ length: chartDays }, (_, index) => {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
-    start.setDate(start.getDate() - (6 - index));
+    start.setDate(start.getDate() - ((chartDays - 1) - index));
 
     const end = new Date(start);
     end.setDate(end.getDate() + 1);
@@ -117,7 +130,7 @@ export function ReportsPage() {
 
   const serviceCounts: Record<string, number> = {};
 
-  washes.forEach((wash) => {
+  periodWashes.forEach((wash) => {
     const services = Array.isArray(wash.services)
       ? wash.services
       : wash.serviceName
@@ -143,6 +156,33 @@ export function ReportsPage() {
   return (
     <>
       <PageHeader title="التقارير" subtitle="إحصائيات الإيرادات والعمليات" />
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          className={period === 'today' ? 'btn btn-primary' : 'btn btn-secondary'}
+          onClick={() => setPeriod('today')}
+        >
+          اليوم
+        </button>
+
+        <button
+          type="button"
+          className={period === '7d' ? 'btn btn-primary' : 'btn btn-secondary'}
+          onClick={() => setPeriod('7d')}
+        >
+          آخر 7 أيام
+        </button>
+
+        <button
+          type="button"
+          className={period === '30d' ? 'btn btn-primary' : 'btn btn-secondary'}
+          onClick={() => setPeriod('30d')}
+        >
+          آخر 30 يوم
+        </button>
+      </div>
+
 
       <div className="stats-grid" style={{ marginBottom: '1rem' }}>
         <div className="stat-card">
