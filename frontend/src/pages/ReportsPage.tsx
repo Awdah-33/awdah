@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
+import { useApp } from '../context/AppContext';
 import { paymentMethodLabels } from '../data/mockData';
 import { formatCurrency } from '../utils/loyalty';
 
 
 
 export function ReportsPage() {
+  const { navigate } = useApp();
   const [period, setPeriod] = useState<'today' | '7d' | '30d'>('today');
 
   const invoices: any[] = JSON.parse(
@@ -185,15 +187,31 @@ export function ReportsPage() {
 
 
       <div className="stats-grid" style={{ marginBottom: '1rem' }}>
-        <div className="stat-card">
-          <div className="stat-label">إيرادات اليوم</div>
+        <div
+          className="stat-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            sessionStorage.setItem('pageBackTo', 'reports');
+            sessionStorage.setItem('reportsPeriod', period);
+            navigate('invoices');
+          }}
+        >
+          <div className="stat-label">إيرادات الفترة</div>
           <div className="stat-value">{formatCurrency(stats.todayRevenue)}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">غسلات اليوم</div>
           <div className="stat-value">{stats.todayWashes}</div>
         </div>
-        <div className="stat-card">
+        <div
+          className="stat-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            sessionStorage.setItem('pageBackTo', 'reports');
+            sessionStorage.setItem('customersReportPeriod', period);
+            navigate('customers');
+          }}
+        >
           <div className="stat-label">عملاء جدد</div>
           <div className="stat-value">{stats.newCustomers}</div>
         </div>
