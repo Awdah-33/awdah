@@ -55,7 +55,7 @@ export function DashboardPage() {
         type="button"
         className="btn btn-primary"
         onClick={() => navigate('register-wash')}
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 16, minWidth: 180, fontSize: 16, fontWeight: 700 }}
       >
         + غسلة جديدة
       </button>
