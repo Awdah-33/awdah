@@ -215,10 +215,6 @@ export function ReportsPage() {
           <div className="stat-label">عملاء جدد</div>
           <div className="stat-value">{stats.newCustomers}</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-label">أعضاء نشطون</div>
-          <div className="stat-value">{stats.activeMembers}</div>
-        </div>
       </div>
 
       <div style={{ display: 'grid', gap: '1rem' }}>
