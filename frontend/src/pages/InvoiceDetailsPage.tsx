@@ -91,6 +91,15 @@ export function InvoiceDetailsPage() {
 
   return (
     <>
+      <button
+        type="button"
+        onClick={() => navigate('invoices')}
+        className="btn btn-secondary"
+        style={{ marginBottom: 12 }}
+      >
+        → الرجوع
+      </button>
+
       <PageHeader title="تفاصيل الفاتورة" subtitle={invoice.invoiceNumber} />
 
       <div className="card" style={{ padding: 20 }}>
